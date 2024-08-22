@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Face Recognition</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <img src="/logos/Icon.jpg" alt=" S" />
+       
+      </div>
+      <h1>نظام تسجيل الحظور</h1>
+    </header>
+
+    <main>
+      <div class="video-container">
+        <video id="video" autoplay muted></video>
+        <button id="stopVideo" class="icon-button">x</button>
+      </div>
+
+      <canvas id="overlay"></canvas>
+
+      <div class="controls">
+        <button id="startVideo">ابدأ الفيديو</button>
+        <button id="capture" class="icon-button">
+          <img src="logos/Camera.jpg" alt="التقاط" />
+        
+        </button>
+      </div>
+
+      <div class="table">
+        <table id="resultsTable">
+          <thead>
+            <tr>
+              <th>اسم الطالب </th><th class="date-header" >   </th><th class="date-header">   </th><th class="date-header">  </th><th class="date-header">   </th><th class="date-header">   </th><th class="date-header">   </th><th class="date-header">   </th><th class="date-header">   </th><th class="date-header">   </th>
+              <th>الاحصائية </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Black Widow</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+              <td>Captain America</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+              <td>Captain Marvel</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+              <td>EmanTalal</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+              <td>Hawkeye</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+              <td>Jim Rhodes</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr><td>MurtadaRaad</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+              <td>Thor</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr><td>Tony Stark</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+    <script src="face-api.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
