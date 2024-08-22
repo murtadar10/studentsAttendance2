@@ -400,8 +400,7 @@ table {
 
 th, td {
     padding: 3px;
-    font-size: 7px;
-    white-space: nowrap;
+    font-size: 1em;
 }
 
 

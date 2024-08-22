@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultsTable = document.getElementById('resultsTable').getElementsByTagName('tbody')[0];
     const overlay = document.getElementById('overlay');
     const context = overlay.getContext('2d');
-
+        
     // Load statuses after initializing resultsTable
     loadStatus();
 
