@@ -19,8 +19,8 @@ header .logo img {
 }
 
 header h1 {
+    color: #fff;
     margin: 0;
-    font-size: 26px;
     
 }
 header {
@@ -29,7 +29,7 @@ header {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #ff69b4); /* استبدال اللون الأصفر بالوردي */
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #ff69b4); 
     overflow: hidden;
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
@@ -84,16 +84,16 @@ header .pulsing-light {
 
 @keyframes colorPulse {
     0% {
-        background: radial-gradient(circle, rgba(255,105,180,0.5), rgba(0,0,0,0)); /* وردي */
+        background: radial-gradient(circle, rgba(255,105,180,0.5), rgba(0,0,0,0));
     }
     33% {
-        background: radial-gradient(circle, rgba(138,43,226,0.5), rgba(0,0,0,0)); /* بنفسجي */
+        background: radial-gradient(circle, rgba(138,43,226,0.5), rgba(0,0,0,0)); 
     }
     66% {
-        background: radial-gradient(circle, rgba(70,130,180,0.5), rgba(0,0,0,0)); /* أزرق */
+        background: radial-gradient(circle, rgba(70,130,180,0.5), rgba(0,0,0,0)); 
     }
     100% {
-        background: radial-gradient(circle, rgba(255,255,255,0.5), rgba(0,0,0,0)); /* أبيض */
+        background: radial-gradient(circle, rgba(255,255,255,0.5), rgba(0,0,0,0));
     }
 }
 
@@ -301,10 +301,10 @@ th, td {
     text-align: center;
 }
 thead th {
-    background-color: #4c61af; /* لون خلفية لرؤوس الأعمدة */
-    color: white; /* لون النص */
-    padding: 12px 8px; /* تباعد داخل الخلايا */
-    text-align: left; /* محاذاة النصوص لليسار */
+    background-color: #4c61af;
+    color: white; 
+    padding: 12px 8px; 
+    text-align: left; 
 }
 
 th {
@@ -346,7 +346,6 @@ header h1 {
     font-size: 16px;
 }
 
-/* الرئيسية */
 main {
     padding: 5px;
     margin: 0 auto;
@@ -386,13 +385,11 @@ video {
     top: 5%;
 }
 
-/* أزرار التحكم */
 button {
     padding: 6px 12px;
     font-size: 12px;
 }
 
-/* جدول النتائج */
 table {
     width: 100%;
     margin: 0 auto;

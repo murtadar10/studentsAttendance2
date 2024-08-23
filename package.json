@@ -1,0 +1,20 @@
+
+
+
+
+
+
+
+
+
+{
+  "name": "package",
+  "version": "1.0.0",
+  "main": "face-api.min.js",
+  "scripts": {
+    "test": "in the name of god"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

@@ -3,10 +3,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const startVideoButton = document.getElementById('startVideo');
     const captureButton = document.getElementById('capture');
     const stopVideoButton = document.getElementById('stopVideo');
+    const editButton = document.getElementById('editbtn');
+    const saveButton = document.getElementById('savebtn');
     const resultsTable = document.getElementById('resultsTable').getElementsByTagName('tbody')[0];
     const overlay = document.getElementById('overlay');
     const context = overlay.getContext('2d');
-        
+    const unknownCountDisplay = document.getElementById('unknownCount'); // عنصر لعرض عدد الأشخاص غير المعروفين
+    let unknownCount = 0; // عداد الأشخاص غير المعروفين
+
     // Load statuses after initializing resultsTable
     loadStatus();
 
@@ -23,6 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
         startVideoButton.addEventListener('click', startVideo);
         captureButton.addEventListener('click', captureImage);
         stopVideoButton.addEventListener('click', stopVideo);
+        editButton.addEventListener('click', makeCellsEditable);
+        saveButton.addEventListener('click',save );
     }
 
     function startVideo() {
@@ -51,10 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const resizedDetections = faceapi.resizeResults(detections, { width: overlay.width, height: overlay.height });
 
         const labeledFaceDescriptors = await loadLabeledImages();
-        const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6);
+        const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.5);
         const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
 
-        // Avoid duplicate entries for the same person in the same capture
+        // Calculate unknown count
+        updateUnknownCount(results); // تحديث عدد الأشخاص غير المعروفين
+
         const uniqueResults = new Set();
         results.forEach(result => uniqueResults.add(result.label));
 
@@ -70,16 +78,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateResultsTable(results) {
         results.forEach(label => {
-            const personRow = Array.from(resultsTable.rows).find(row => row.cells[0].textContent === label);
-            if (personRow) {
-                const nextAvailableCellIndex = getNextAvailableIndex(personRow);
-                if (nextAvailableCellIndex !== -1) {
-                    personRow.cells[nextAvailableCellIndex].textContent = '✔️'; // Changed to a check mark
-                }
+            if (label === 'unknown') {
+                return; // تجاهل الأشخاص غير المعروفين
             }
-            updateStatistics(personRow); // Update statistics after each update
+
+            let personRow = Array.from(resultsTable.rows).find(row => row.cells[0].textContent === label);
+            if (!personRow) {
+                console.warn(`Row for label '${label}' not found.`);
+                return;
+            }
+            const nextAvailableCellIndex = getNextAvailableIndex(personRow);
+            if (nextAvailableCellIndex !== -1) {
+                personRow.cells[nextAvailableCellIndex].textContent = '✔️';
+            }
+            updateStatistics(personRow);
         });
         saveStatus();
+    }
+
+    function updateStatistics(row) {
+        if (!row) return;
+        const cells = row.cells;
+        let presentCount = 0;
+        for (let i = 1; i < cells.length - 1; i++) { // Exclude the last column (statistics)
+            if (cells[i].textContent === '✔️') {
+                presentCount++;
+            }
+        }
+        cells[cells.length - 1].textContent = presentCount; // Set the statistics in the last column
     }
 
     function updateMissingStatuses(results) {
@@ -89,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (personName && !detectedLabels.includes(personName)) {
                 const nextAvailableCellIndex = getNextAvailableIndex(row);
                 if (nextAvailableCellIndex !== -1) {
-                    row.cells[nextAvailableCellIndex].textContent = '❌'; // Changed to a cross mark
+                    row.cells[nextAvailableCellIndex].textContent = '❌';
                 }
             }
             updateStatistics(row); // Update statistics after each update
@@ -107,24 +133,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return -1;
     }
 
-    function updateStatistics(row) {
-        const cells = row.cells;
-        let presentCount = 0;
-        for (let i = 1; i < cells.length - 1; i++) { // Exclude the last column (statistics)
-            if (cells[i].textContent === '✔️') {
-                presentCount++;
-            }
-        }
-        cells[cells.length - 1].textContent = presentCount; // Set the statistics in the last column
-    }
-
     function saveStatus() {
         const headerDates = [];
         const statuses = {};
-        // تخزين محتويات خلايا الرأس (التواريخ)
         const headerCells = document.querySelectorAll('thead th');
         headerCells.forEach((cell, index) => {
-            if (index > 0) { // تجاوز أول خلية (الاسم)
+            if (index > 0) {
                 headerDates.push(cell.textContent || '');
             }
         });
@@ -142,11 +156,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadStatus() {
         const savedHeaderDates = JSON.parse(localStorage.getItem('headerDates')) || [];
-
-        // استعادة التواريخ في خلايا الرؤوس
         const headerCells = document.querySelectorAll('thead th');
         savedHeaderDates.forEach((date, index) => {
-            if (index < headerCells.length - 1) { // تجاوز أول خلية (الاسم) والتأكد من عدم تجاوز عدد الخلايا
+            if (index < headerCells.length - 1) { 
                 headerCells[index + 1].textContent = date;
             }
         });
@@ -159,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 cells[j].textContent = statuses[j - 1] || '';
             }
         });
+        updateUnknownCount(); // تحديث عدد الأشخاص غير المعروفين عند تحميل الصفحة
     }
 
     function loadLabeledImages() {
@@ -188,10 +201,59 @@ document.addEventListener('DOMContentLoaded', () => {
     
         for (let i = 1; i < headerCells.length; i++) {
             if (!headerCells[i].textContent || headerCells[i].textContent.trim() === '') {
-                headerCells[i].textContent = `المحاضرة ${i} \n
+                headerCells[i].textContent = `( ${i}) \n
                  ${formattedDate}`;
                 break; 
             }
         }
     }
+
+    // Function to count and display the number of unknown persons
+    function updateUnknownCount(results = []) {
+        // Reset the count before recalculating
+        unknownCount = 0;
+        results.forEach(result => {
+            if (result.label === 'unknown') {
+                unknownCount++;
+            }
+        });
+        unknownCountDisplay.textContent = `الظيوف: ${unknownCount}`;
+        if(unknownCount===0){
+            unknownCountDisplay.textContent = '';
+        }
+    }
+
+   
+// ========================================
+ function save(){
+        
+        saveStatus()
+        alert(" تم الحفظ حفوظي ")
+        location.reload(); 
+    }
+// ====================================================
+
 });
+// نهاية الدالة
+
+// اجعل خلايا الحضور قابلة للتحرير عند النقر عليها
+function makeCellsEditable() {
+    const resultsTable = document.getElementById('resultsTable').getElementsByTagName('tbody')[0];
+    Array.from(resultsTable.rows).forEach(row => {
+        for (let i = 1; i < row.cells.length - 1; i++) { // استثناء أول وآخر عمود
+            row.cells[i].addEventListener('click', function() {
+                if (this.textContent === '✔️') {
+                    this.textContent = '❌';
+                } else if (this.textContent === '❌') {
+                    this.textContent = '✔️';
+                } else {
+                    this.textContent = '✔️'; // افتراضياً
+                }
+            
+            });
+        }
+    });
+    
+}
+
+
